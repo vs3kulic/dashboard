@@ -37,7 +37,7 @@ share/python-wheels/
 MANIFEST
 
 # Document folders
-input_csv/
-output_csv/
+data/processed/
+data/raw/
 
 # Internal files
