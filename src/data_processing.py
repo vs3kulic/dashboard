@@ -26,6 +26,13 @@ def load_data() -> pd.DataFrame:
 
     return df
 
+def extract_sender_recipient(subject: str) -> str:
+    """Extracts sender or recipient information from the subject field."""
+    # TODO: Define actual parsing logic based on known patterns in the subject field
+    if "sekulic" in subject.lower():
+        return "Sekulic"
+    else:
+        return "N/A"  # Default value if no pattern matches
 
 def transform_file() -> pd.DataFrame:
     """Transforms the input CSV file and saves the processed data."""
@@ -33,24 +40,24 @@ def transform_file() -> pd.DataFrame:
     df = load_data()
     output_file = PROJECT_ROOT/"data"/"processed"/"processed_transactions.csv"
 
-    # Select the columns we need and add new columns to the DataFrame
+    # Select needed columns and add new columns to the DataFrame
     df_processed = df[["booking_date", "subject", "amount"]].copy()
     df_processed = df_processed.assign(
-        sender_recipient="",
+        sender_recipient=df_processed['subject'].apply(extract_sender_recipient),
         purpose="",
         category=""
     )
 
     df_processed.to_csv(output_file, index=False)  # Save processed data without index
-    return df_processed  # Return for inspection/testing
+    return df_processed
 
 
 def main():
     """Main function for demonstrating the data loading."""
-    df = load_data()
+    # df = load_data()
+    # print(df.head())
     df_transformed = transform_file()
-    print(df.head())
-    print(df_transformed.head())
+    print(df_transformed.head(20))
 
 if __name__ == "__main__":
     main()
