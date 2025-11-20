@@ -64,7 +64,7 @@ def extract_counterparty(subject: str) -> str:
     for key in CP2CAT.keys():
         if key.upper() in subject.upper():
             return key
-    return "N/A"
+    return "Uncategorized"
 
 
 def assign_category(counterparty: str) -> str:
@@ -73,7 +73,7 @@ def assign_category(counterparty: str) -> str:
     :param counterparty: Extracted counterparty name
     :return: Category name or "N/A" if not found
     """
-    return CP2CAT.get(counterparty, "N/A")
+    return CP2CAT.get(counterparty, "Uncategorized")
 
 
 # ============================================================================
@@ -93,7 +93,7 @@ def transform_file() -> pd.DataFrame:
     df_processed["category"] = df_processed["counterparty"].apply(assign_category)
 
     # Save the processed DataFrame to a new CSV file
-    df_processed.to_csv(OUTPUT_FILE, index=False)
+    df_processed.to_csv(OUTPUT_FILE, index=False, decimal=',', sep=';')
     return df_processed
 
 
