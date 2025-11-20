@@ -2,6 +2,7 @@
 
 This file describes the essentials for setting up a small dev project.
 
+
 ## Project setup
 
 - create new virtual env: python3 -m venv .venv
