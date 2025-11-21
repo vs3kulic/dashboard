@@ -68,12 +68,12 @@ def extract_counterparty(subject: str) -> str:
     subject_upper = subject.upper()
 
     # Check aliases first, longest first
-    for alias, canonical in sorted(ALIASES.items(), reverse=True):
+    for alias, canonical in sorted(ALIASES.items(), key=len, reverse=True):
         if alias in subject_upper:
             return canonical.upper()  # Return the canonical name in uppercase
 
     # Check mapping keys, longest first
-    for counterparty in sorted(CP2CAT.keys(), reverse=True):
+    for counterparty in sorted(CP2CAT.keys(), key=len, reverse=True):
         if counterparty in subject_upper:
             return counterparty  # Return as is since keys are already uppercase
 
