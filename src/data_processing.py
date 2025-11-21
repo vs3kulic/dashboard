@@ -1,24 +1,7 @@
 """This module contains functions for processing financial transaction data."""
-from pathlib import Path
 import json
 import pandas as pd
-
-# ============================================================================
-# PATH CONFIGURATION
-# ============================================================================
-
-# Project structure
-PROJECT_ROOT = Path(__file__).parent.parent
-
-# Data files
-RAW_DATA_DIR = PROJECT_ROOT / "data" / "raw"
-PROCESSED_DATA_DIR = PROJECT_ROOT / "data" / "processed"
-INPUT_FILE = RAW_DATA_DIR / "Umsatzliste_raw.csv"
-OUTPUT_FILE = PROCESSED_DATA_DIR / "Umsatzliste_processed.csv"
-
-# Mapping files
-ALIAS_MAPPING = PROJECT_ROOT / "config" / "alias_mapping.json"
-CATEGORY_MAPPING = PROJECT_ROOT / "config" / "category_mapping.json"
+import config.config as config
 
 
 # ============================================================================
@@ -28,7 +11,7 @@ CATEGORY_MAPPING = PROJECT_ROOT / "config" / "category_mapping.json"
 def load_category_mapping() -> dict:
     """Loads the category mapping from JSON config file."""
     # Open and read the JSON mapping file
-    with open(CATEGORY_MAPPING, 'r', encoding='utf-8') as f:
+    with open(config.CATEGORY_MAPPING, 'r', encoding='utf-8') as f:
         mapping = json.load(f)
 
     # Normalize all keys to uppercase
@@ -38,7 +21,7 @@ def load_category_mapping() -> dict:
 def load_alias_mapping() -> dict:
     """Loads the alias mapping from JSON config file."""
     # Open and read the JSON mapping file
-    with open(ALIAS_MAPPING, 'r', encoding='utf-8') as f:
+    with open(config.ALIAS_MAPPING, 'r', encoding='utf-8') as f:
         mapping = json.load(f)
 
     # Normalize all keys to uppercase
@@ -58,7 +41,7 @@ def load_data() -> pd.DataFrame:
     """Reads and processes the financial transaction data from a CSV file."""
     # Define column names since the CSV does not have a header, read into DataFrame
     column_names = ["booking_date", "subject", "execution_date", "amount", "currency", "timestamp"]
-    df = pd.read_csv(INPUT_FILE, delimiter=";", names=column_names)
+    df = pd.read_csv(config.INPUT_FILE, delimiter=";", names=column_names)
 
     # Convert amount from German format (comma as decimal) to float
     df["amount"] = df["amount"].str.replace('.', '', regex=False)  # Remove thousands separator
@@ -83,7 +66,7 @@ def extract_counterparty(subject: str) -> str:
     :return: Extracted counterparty name
     """
     subject_upper = subject.upper()
-    
+
     # Check aliases first, longest first
     for alias, canonical in sorted(ALIASES.items(), reverse=True):
         if alias in subject_upper:
@@ -94,6 +77,7 @@ def extract_counterparty(subject: str) -> str:
         if counterparty in subject_upper:
             return counterparty  # Return as is since keys are already uppercase
 
+    # If no match found, return a default value
     return "UNCATEGORIZED"
 
 
@@ -121,7 +105,7 @@ def transform_file() -> pd.DataFrame:
     df_processed["category"] = df_processed["counterparty"].apply(assign_category)
 
     # Save processed data to CSV
-    df_processed.to_csv(OUTPUT_FILE, index=False, decimal=",", sep=";")
+    df_processed.to_csv(config.OUTPUT_FILE, index=False, decimal=",", sep=";")
     return df_processed
 
 

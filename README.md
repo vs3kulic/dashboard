@@ -71,7 +71,8 @@ streamlit run src/dashboard.py
 
 ## Configuration
 
-Transaction categories and aliases are configured via JSON files in `config/`. 
+- Transaction categories and aliases are configured via JSON files in `config/`
+- Paths to I/O files and mappings are configured via config.py in `config/`
 
 ## Dependencies
 
