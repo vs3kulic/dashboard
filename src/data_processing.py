@@ -86,13 +86,13 @@ def extract_counterparty(subject: str) -> str:
     
     # Check aliases first, longest first
     for alias, canonical in sorted(ALIASES.items(), reverse=True):
-        if alias.upper() in subject_upper:
-            return canonical.upper()
+        if alias in subject_upper:
+            return canonical.upper()  # Return the canonical name in uppercase
 
     # Check mapping keys, longest first
-    for counterparty in sorted(CP2CAT.keys(), key=len, reverse=True):
+    for counterparty in sorted(CP2CAT.keys(), reverse=True):
         if counterparty in subject_upper:
-            return counterparty
+            return counterparty  # Return as is since keys are already uppercase
 
     return "UNCATEGORIZED"
 
