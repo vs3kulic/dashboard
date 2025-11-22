@@ -90,6 +90,20 @@ def assign_category(counterparty: str) -> str:
     return CP2CAT.get(counterparty, "uncategorized")
 
 
+def extract_purpose(subject: str) -> str:
+    """Extracts the purpose from the transaction subject.
+    
+    :param subject: Transaction subject string
+    :return: Extracted purpose string
+    """
+    marker = "Verwendungszweck: "
+    index = subject.find(marker)  # Returns index of the marker or -1 if not found
+    start = index + len(marker)
+    end = subject.find(" ", start)  # Find the next space after the marker, starting from 'start'
+
+    return subject[start:end] if index != -1 else ""
+
+
 # ============================================================================
 # DATA TRANSFORMATION PIPELINE
 # ============================================================================
@@ -103,6 +117,7 @@ def transform_file() -> pd.DataFrame:
     df_processed = df[["booking_date", "subject", "amount"]].copy()
     df_processed["counterparty"] = df_processed["subject"].apply(extract_counterparty)
     df_processed["category"] = df_processed["counterparty"].apply(assign_category)
+    df_processed["purpose"] = df_processed["subject"].apply(extract_purpose)
 
     # Save processed data to CSV
     df_processed.to_csv(config.OUTPUT_FILE, index=False, decimal=",", sep=";")
